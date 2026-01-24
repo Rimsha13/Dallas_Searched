@@ -1,8 +1,13 @@
-import time
 from fastapi import FastAPI
+import time
 from playwright.sync_api import sync_playwright
 
 app = FastAPI()
+
+@app.get("/")
+def health():
+    return {"status": "alive"}
+
 
 def lookup_case(case_number: str):
     with sync_playwright() as p:
@@ -42,3 +47,4 @@ def search_case(payload: dict):
         return {"error": "case_number_missing"}
 
     return lookup_case(case_number)
+
