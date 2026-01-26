@@ -12,16 +12,23 @@ def root():
 def search(case_number: str):
     return lookup_case(case_number)
 
-def lookup_case(case_number):
+def lookup_case(case_number: str):
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage"]
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage"
+            ]
         )
-        page = browser.new_page()
+
+        page = browser.new_page(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        )
 
         page.goto("https://www.dallascounty.org/jaillookup/search.jsp", timeout=60000)
         page.wait_for_timeout(3000)
+
         page.mouse.wheel(0, 1500)
         time.sleep(2)
 
@@ -38,4 +45,7 @@ def lookup_case(case_number):
         if "No records were found" in text:
             return {"found": False}
 
-        return {"found": True, "raw_text": text[:3000]}
+        return {
+            "found": True,
+            "raw_text": text[:3000]
+        }
